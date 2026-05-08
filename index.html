@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Asset Details</title>
+
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				margin: 0;
+				padding: 16px;
+				background: #ffffff;
+				color: #111;
+			}
+
+			h2 {
+				margin-top: 0;
+				margin-bottom: 16px;
+				font-size: 22px;
+			}
+
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			td {
+				border: 1px solid #ddd;
+				padding: 10px;
+				vertical-align: top;
+				word-break: break-word;
+			}
+
+			td:first-child {
+				font-weight: bold;
+				width: 38%;
+				background: #f7f7f7;
+			}
+
+			.not-found {
+				font-size: 18px;
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h2 id="title">Loading...</h2>
+
+		<table id="table"></table>
+
+		<script>
+			(async () => {
+				const params = new URLSearchParams(window.location.search);
+				const id = params.get('id');
+
+				if (!id) {
+					document.body.innerHTML =
+						'<div class="not-found">Missing ID</div>';
+					return;
+				}
+
+				try {
+					const response = await fetch('./data.json');
+					const data = await response.json();
+
+					const row = data[id];
+
+					if (!row) {
+						document.body.innerHTML =
+							'<div class="not-found">Invalid ID</div>';
+						return;
+					}
+
+					const table = document.getElementById('table');
+
+					for (const [key, value] of Object.entries(row)) {
+						const tr = document.createElement('tr');
+
+						const td1 = document.createElement('td');
+						td1.textContent = key;
+
+						const td2 = document.createElement('td');
+						td2.textContent = value;
+
+						tr.appendChild(td1);
+						tr.appendChild(td2);
+
+						table.appendChild(tr);
+					}
+				} catch (err) {
+					document.body.innerHTML =
+						'<div class="not-found">Failed to load data</div>';
+					console.error(err);
+				}
+			})();
+		</script>
+	</body>
+</html>
